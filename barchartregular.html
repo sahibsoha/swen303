@@ -1,0 +1,721 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Regular season Bar chart</title>
+	<link rel="stylesheet" href="style2.css">
+        <script type="text/javascript" src="d3.min.js"></script>
+    </head>
+    <body>
+	<table bgcolor="#EE6363" width="80%" align="center">
+	<tr>
+	<td><a href="displayingdatascatterplot.html">ScatterPlot</a></td>
+	<td><a href="barchartearly.html">Early season performance</a></td>
+	<td><a href="barchartmid.html">Mid season performance</a></td>
+	<td><a href="barchartregular.html">Regular season performance</a></td>
+	<td><a href="displayingdatabarchart.html">Final season performance</a></td>
+	<td><a href="displayingdatabarchartsort.html">Sorted results</a></td>
+	</tr>
+	<tr>
+	<td><p id="p0">Click here for 2008</p></td>
+	<td><p id="p1">Click here for 2009</p></td>
+	<td><p id="p3">Click here for 2010</p></td>
+	<td><p id="p4">Click here for 2011</p></td>
+	<td><p id="p5">Click here for 2012</p></td>
+	<td><p id="p6">Click here for 2013</p></td>
+	</tr>
+	</table>
+        	
+	<script type="text/javascript">
+			//Width and height
+			var w = 400;
+			var h = 400;
+			var padding = 0;
+
+			var dataset=[];
+			var dataset2009=[];
+			var dataset2010=[];
+			var dataset2011=[];
+			var dataset2012=[];
+			var dataset2013=[];
+			var score=[];
+			var ScoreA=[];
+			var ScoreB=[];
+			var Teams=[{key: 'Central Pulse', value: 0}, {key: 'Northern Mystics', value: 0}, {key: 'Waikato Bay of Plenty Magic', value:0}, {key: 'Southern Steel', value: 0}, {key: 'Canterbury Tactix', value:0}, {key: 'New South Wales Swifts', value: 0}, {key: 'Adelaide Thunderbirds', value: 0}, {key: 'Melbourne Vixens', value:0}, {key: 'West Coast Fever', value: 0}, {key: 'Queensland Firebirds', value:0}];
+			var TeamsSorted=[];
+			//d3.select("body").append("p").html("Click here for 2008").attr("id","p0");
+			//d3.select("body").append("p").html("Click here for 2009").attr("id","p1");
+			//d3.select("body").append("p").html("Click here for 2010").attr("id","p3");
+			//d3.select("body").append("p").html("Click here for 2011").attr("id","p4");
+			//d3.select("body").append("p").html("Click here for 2012").attr("id","p5");
+			//d3.select("body").append("p").html("Click here for 2013").attr("id","p6");
+			d3.select("body").append("p").html("2008 Regular season performance:").attr("id","p2");
+			d3.select("body").append("p").html("Graph to show Team vs Total score:").attr("id","p7");
+			
+			d3.csv("2008.csv", function(error, data) {
+				if (error) {  //If error is not null, something went wrong.
+          				console.log(error);  //Log the error.
+        			} else {      //If no error, the file loaded correctly. 
+         			 //console.log(data);   //Log the data.
+
+      				//Include other code to execute after successful file load here
+      				dataset = data;
+				}
+			d3.csv("2009.csv", function(error, data2) {
+				if (error) {  //If error is not null, something went wrong.
+          				console.log(error);  //Log the error.
+        			} else {      //If no error, the file loaded correctly. 
+         			 //console.log(data2);   //Log the data.
+
+      				//Include other code to execute after successful file load here
+      				dataset2009 = data2;
+				}
+			d3.csv("2010.csv", function(error, data3) {
+				if (error) {  //If error is not null, something went wrong.
+          				console.log(error);  //Log the error.
+        			} else {      //If no error, the file loaded correctly. 
+         			 //console.log(data3);   //Log the data.
+
+      				//Include other code to execute after successful file load here
+      				dataset2010 = data3;
+				}
+			d3.csv("2011.csv", function(error, data4) {
+				if (error) {  //If error is not null, something went wrong.
+          				console.log(error);  //Log the error.
+        			} else {      //If no error, the file loaded correctly. 
+         			 //console.log(data4);   //Log the data.
+
+      				//Include other code to execute after successful file load here
+      				dataset2011 = data4;
+				}
+			d3.csv("2012.csv", function(error, data5) {
+				if (error) {  //If error is not null, something went wrong.
+          				console.log(error);  //Log the error.
+        			} else {      //If no error, the file loaded correctly. 
+         			 //console.log(data5);   //Log the data.
+
+      				//Include other code to execute after successful file load here
+      				dataset2012 = data5;
+				}
+			d3.csv("2013.csv", function(error, data6) {
+				if (error) {  //If error is not null, something went wrong.
+          				console.log(error);  //Log the error.
+        			} else {      //If no error, the file loaded correctly. 
+         			 //console.log(data6);   //Log the data.
+
+      				//Include other code to execute after successful file load here
+      				dataset2013 = data6;
+				}
+
+			//Create SVG element
+			var svg = d3.select("body").append("svg")
+						.attr("width", w+200)
+						.attr("height", h+200);
+			
+			for(var i=0; i<70; i++){
+				score[i]=dataset[i]['Score']; 
+				ScoreB[i]=+score[i].substring(3);	//the plus sign makes it a value
+				ScoreA[i]=+score[i].substring(0,2);
+				if(ScoreA[i]>ScoreB[i]){	
+					if((dataset[i]['Home Team'])==(Teams[0].key)){(Teams[0].value)=(Teams[0].value)+2;}
+					else if((dataset[i]['Home Team'])==(Teams[1].key)){(Teams[1].value)=(Teams[1].value)+2;}
+					else if((dataset[i]['Home Team'])==(Teams[2].key)){(Teams[2].value)=(Teams[2].value)+2;}
+					else if((dataset[i]['Home Team'])==(Teams[3].key)){(Teams[3].value)=(Teams[3].value)+2;}
+					else if((dataset[i]['Home Team'])==(Teams[4].key)){(Teams[4].value)=(Teams[4].value)+2;}	
+					else if((dataset[i]['Home Team'])==(Teams[5].key)){(Teams[5].value)=(Teams[5].value)+2;}
+					else if((dataset[i]['Home Team'])==(Teams[6].key)){(Teams[6].value)=(Teams[6].value)+2;}
+					else if((dataset[i]['Home Team'])==(Teams[7].key)){(Teams[7].value)=(Teams[7].value)+2;}
+					else if((dataset[i]['Home Team'])==(Teams[8].key)){(Teams[8].value)=(Teams[8].value)+2;}
+					else if((dataset[i]['Home Team'])==(Teams[9].key)){(Teams[9].value)=(Teams[9].value)+2;}
+				}
+				else if(ScoreB[i]>ScoreA[i]){
+					if((dataset[i]['Away Team'])==(Teams[0].key)){(Teams[0].value)=(Teams[0].value)+2;}
+					else if((dataset[i]['Away Team'])==(Teams[1].key)){(Teams[1].value)=(Teams[1].value)+2;}
+					else if((dataset[i]['Away Team'])==(Teams[2].key)){(Teams[2].value)=(Teams[2].value)+2;}
+					else if((dataset[i]['Away Team'])==(Teams[3].key)){(Teams[3].value)=(Teams[3].value)+2;}
+					else if((dataset[i]['Away Team'])==(Teams[4].key)){(Teams[4].value)=(Teams[4].value)+2;}	
+					else if((dataset[i]['Away Team'])==(Teams[5].key)){(Teams[5].value)=(Teams[5].value)+2;}
+					else if((dataset[i]['Away Team'])==(Teams[6].key)){(Teams[6].value)=(Teams[6].value)+2;}
+					else if((dataset[i]['Away Team'])==(Teams[7].key)){(Teams[7].value)=(Teams[7].value)+2;}
+					else if((dataset[i]['Away Team'])==(Teams[8].key)){(Teams[8].value)=(Teams[8].value)+2;}
+					else if((dataset[i]['Away Team'])==(Teams[9].key)){(Teams[9].value)=(Teams[9].value)+2;}
+				}
+				else{
+				        if((dataset[i]['Home Team'])==(Teams[0].key)){(Teams[0].value)=(Teams[0].value)+1;}
+					else if((dataset[i]['Home Team'])==(Teams[1].key)){(Teams[1].value)=(Teams[1].value)+1;}
+					else if((dataset[i]['Home Team'])==(Teams[2].key)){(Teams[2].value)=(Teams[2].value)+1;}
+					else if((dataset[i]['Home Team'])==(Teams[3].key)){(Teams[3].value)=(Teams[3].value)+1;}
+					else if((dataset[i]['Home Team'])==(Teams[4].key)){(Teams[4].value)=(Teams[4].value)+1;}	
+					else if((dataset[i]['Home Team'])==(Teams[5].key)){(Teams[5].value)=(Teams[5].value)+1;}
+					else if((dataset[i]['Home Team'])==(Teams[6].key)){(Teams[6].value)=(Teams[6].value)+1;}
+					else if((dataset[i]['Home Team'])==(Teams[7].key)){(Teams[7].value)=(Teams[7].value)+1;}
+					else if((dataset[i]['Home Team'])==(Teams[8].key)){(Teams[8].value)=(Teams[8].value)+1;}
+					else if((dataset[i]['Home Team'])==(Teams[9].key)){(Teams[9].value)=(Teams[9].value)+1;}
+
+					if((dataset[i]['Away Team'])==(Teams[0].key)){(Teams[0].value)=(Teams[0].value)+1;}
+					else if((dataset[i]['Away Team'])==(Teams[1].key)){(Teams[1].value)=(Teams[1].value)+1;}
+					else if((dataset[i]['Away Team'])==(Teams[2].key)){(Teams[2].value)=(Teams[2].value)+1;}
+					else if((dataset[i]['Away Team'])==(Teams[3].key)){(Teams[3].value)=(Teams[3].value)+1;}
+					else if((dataset[i]['Away Team'])==(Teams[4].key)){(Teams[4].value)=(Teams[4].value)+1;}	
+					else if((dataset[i]['Away Team'])==(Teams[5].key)){(Teams[5].value)=(Teams[5].value)+1;}
+					else if((dataset[i]['Away Team'])==(Teams[6].key)){(Teams[6].value)=(Teams[6].value)+1;}
+					else if((dataset[i]['Away Team'])==(Teams[7].key)){(Teams[7].value)=(Teams[7].value)+1;}
+					else if((dataset[i]['Away Team'])==(Teams[8].key)){(Teams[8].value)=(Teams[8].value)+1;}
+					else if((dataset[i]['Away Team'])==(Teams[9].key)){(Teams[9].value)=(Teams[9].value)+1;}
+				}
+			}
+			
+			//Making the bar chart now
+			var xScale = d3.scale.ordinal()
+							.domain(d3.range(Teams.length))
+							.rangeRoundBands([0, w], 0.05);
+			
+
+			var yScale = d3.scale.linear()
+							.domain([0, d3.max(Teams, function(d){return d.value;})])
+							.range([0, h]);
+			//Create bars
+			svg.selectAll("rect")
+			   .data(Teams)
+			   .enter()
+			   .append("rect")
+			   .attr("x", function(d, i) {
+			   		return xScale(i);
+			   })
+			   .attr("y", function(d) {
+			   		return h - yScale(d.value);
+			   })
+			   .attr("width", xScale.rangeBand())
+			   .attr("height", function(d) {
+			   		return yScale(d.value);
+			   })
+			   .attr("fill", function(d) {
+					return "rgb(0, 0, " + (d.value * 10) + ")";
+			   })
+			    .on("mouseover", function() {		//this affects the bar hovered over
+			   		d3.select(this)
+					.attr("fill", "orange");
+			   })
+			   .on("mouseout", function(d) {		//this affects the bars next to the one hovered over
+				   d3.select(this)
+				   		.transition()
+				   		.duration(250)
+						.attr("fill", "rgb(0, 0, " + (d.value * 10) + ")");
+			   });
+			   //Define X axis ADDED THIS IN
+			var xAxis = d3.svg.axis()
+						.scale(xScale)
+						.tickFormat(function(d) { return Teams[d].key; })
+						.orient("bottom");
+			 //Create labels
+			svg.selectAll("text")
+			   .data(Teams)
+			   .enter()
+			   .append("text")
+			   .text(function(d) {
+			   		return d.value;
+			   })
+			   .attr("text-anchor", "middle")
+			   .attr("x", function(d, i) {
+			   		return xScale(i) + xScale.rangeBand() / 2;
+			   })
+			   .attr("y", function(d) {
+			   		return h - yScale(d.value) + 14;
+			   })
+			   .attr("font-family", "sans-serif")
+			   .attr("font-size", "11px")
+			   .attr("fill", "white");
+
+			 //Create X axis ADDED THIS IN
+			svg.append("g")
+    			.attr("class", "axis")
+    			.attr("transform", "translate(10," + (h - padding) + ")")
+    			.call(xAxis)
+			.selectAll("text")  
+     			.style("text-anchor", "end")
+			.style("font", "9px sans-serif")
+     			.attr("dx", "-.8em")
+     			.attr("dy", ".15em")
+			.attr("fill", "red")
+     			.attr("transform", function(d) {
+         			return "rotate(-55)" 
+     			});
+
+			 
+			//On click, update with new 2008			
+			d3.select("#p0")
+				.on("click", function() {
+				d3.select("#p2").html("2008 Regular season performance:");
+				//reinitialize arrays to get rid of the old data
+				var Teams=[{key: 'Central Pulse', value: 0}, {key: 'Northern Mystics', value: 0}, {key: 'Waikato Bay of Plenty Magic', value:0}, {key: 'Southern Steel', value: 0}, {key: 'Canterbury Tactix', value:0}, {key: 'New South Wales Swifts', value: 0}, {key: 'Adelaide Thunderbirds', value: 0}, {key: 'Melbourne Vixens', value:0}, {key: 'West Coast Fever', value: 0}, {key: 'Queensland Firebirds', value:0}];
+
+				for(var i=0; i<70; i++){
+				score[i]=dataset[i]['Score']; 
+				ScoreB[i]=+score[i].substring(3);	//the plus sign makes it a value
+				ScoreA[i]=+score[i].substring(0,2);
+				if(ScoreA[i]>ScoreB[i]){	
+					if((dataset[i]['Home Team'])==(Teams[0].key)){(Teams[0].value)=(Teams[0].value)+2;}
+					else if((dataset[i]['Home Team'])==(Teams[1].key)){(Teams[1].value)=(Teams[1].value)+2;}
+					else if((dataset[i]['Home Team'])==(Teams[2].key)){(Teams[2].value)=(Teams[2].value)+2;}
+					else if((dataset[i]['Home Team'])==(Teams[3].key)){(Teams[3].value)=(Teams[3].value)+2;}
+					else if((dataset[i]['Home Team'])==(Teams[4].key)){(Teams[4].value)=(Teams[4].value)+2;}	
+					else if((dataset[i]['Home Team'])==(Teams[5].key)){(Teams[5].value)=(Teams[5].value)+2;}
+					else if((dataset[i]['Home Team'])==(Teams[6].key)){(Teams[6].value)=(Teams[6].value)+2;}
+					else if((dataset[i]['Home Team'])==(Teams[7].key)){(Teams[7].value)=(Teams[7].value)+2;}
+					else if((dataset[i]['Home Team'])==(Teams[8].key)){(Teams[8].value)=(Teams[8].value)+2;}
+					else if((dataset[i]['Home Team'])==(Teams[9].key)){(Teams[9].value)=(Teams[9].value)+2;}
+				}
+				else if(ScoreB[i]>ScoreA[i]){
+					if((dataset[i]['Away Team'])==(Teams[0].key)){(Teams[0].value)=(Teams[0].value)+2;}
+					else if((dataset[i]['Away Team'])==(Teams[1].key)){(Teams[1].value)=(Teams[1].value)+2;}
+					else if((dataset[i]['Away Team'])==(Teams[2].key)){(Teams[2].value)=(Teams[2].value)+2;}
+					else if((dataset[i]['Away Team'])==(Teams[3].key)){(Teams[3].value)=(Teams[3].value)+2;}
+					else if((dataset[i]['Away Team'])==(Teams[4].key)){(Teams[4].value)=(Teams[4].value)+2;}	
+					else if((dataset[i]['Away Team'])==(Teams[5].key)){(Teams[5].value)=(Teams[5].value)+2;}
+					else if((dataset[i]['Away Team'])==(Teams[6].key)){(Teams[6].value)=(Teams[6].value)+2;}
+					else if((dataset[i]['Away Team'])==(Teams[7].key)){(Teams[7].value)=(Teams[7].value)+2;}
+					else if((dataset[i]['Away Team'])==(Teams[8].key)){(Teams[8].value)=(Teams[8].value)+2;}
+					else if((dataset[i]['Away Team'])==(Teams[9].key)){(Teams[9].value)=(Teams[9].value)+2;}
+				}
+				else{
+				        if((dataset[i]['Home Team'])==(Teams[0].key)){(Teams[0].value)=(Teams[0].value)+1;}
+					else if((dataset[i]['Home Team'])==(Teams[1].key)){(Teams[1].value)=(Teams[1].value)+1;}
+					else if((dataset[i]['Home Team'])==(Teams[2].key)){(Teams[2].value)=(Teams[2].value)+1;}
+					else if((dataset[i]['Home Team'])==(Teams[3].key)){(Teams[3].value)=(Teams[3].value)+1;}
+					else if((dataset[i]['Home Team'])==(Teams[4].key)){(Teams[4].value)=(Teams[4].value)+1;}	
+					else if((dataset[i]['Home Team'])==(Teams[5].key)){(Teams[5].value)=(Teams[5].value)+1;}
+					else if((dataset[i]['Home Team'])==(Teams[6].key)){(Teams[6].value)=(Teams[6].value)+1;}
+					else if((dataset[i]['Home Team'])==(Teams[7].key)){(Teams[7].value)=(Teams[7].value)+1;}
+					else if((dataset[i]['Home Team'])==(Teams[8].key)){(Teams[8].value)=(Teams[8].value)+1;}
+					else if((dataset[i]['Home Team'])==(Teams[9].key)){(Teams[9].value)=(Teams[9].value)+1;}
+
+					if((dataset[i]['Away Team'])==(Teams[0].key)){(Teams[0].value)=(Teams[0].value)+1;}
+					else if((dataset[i]['Away Team'])==(Teams[1].key)){(Teams[1].value)=(Teams[1].value)+1;}
+					else if((dataset[i]['Away Team'])==(Teams[2].key)){(Teams[2].value)=(Teams[2].value)+1;}
+					else if((dataset[i]['Away Team'])==(Teams[3].key)){(Teams[3].value)=(Teams[3].value)+1;}
+					else if((dataset[i]['Away Team'])==(Teams[4].key)){(Teams[4].value)=(Teams[4].value)+1;}	
+					else if((dataset[i]['Away Team'])==(Teams[5].key)){(Teams[5].value)=(Teams[5].value)+1;}
+					else if((dataset[i]['Away Team'])==(Teams[6].key)){(Teams[6].value)=(Teams[6].value)+1;}
+					else if((dataset[i]['Away Team'])==(Teams[7].key)){(Teams[7].value)=(Teams[7].value)+1;}
+					else if((dataset[i]['Away Team'])==(Teams[8].key)){(Teams[8].value)=(Teams[8].value)+1;}
+					else if((dataset[i]['Away Team'])==(Teams[9].key)){(Teams[9].value)=(Teams[9].value)+1;}
+				}
+			        }
+
+					var yScale = d3.scale.linear()
+							.domain([0, d3.max(Teams, function(d){return d.value;})])
+							.range([0, h]);
+					
+					//Update all rects
+					svg.selectAll("rect")
+					   .data(Teams)
+					   .transition()
+					   .duration(2000)
+					   .ease("bounce")	//can comment 
+					   .attr("y", function(d) {
+					   		return h - yScale(d.value);
+					   })
+					   .attr("height", function(d) {
+					   		return yScale(d.value);
+					   })
+					   .attr("fill", function(d) {
+							return "rgb(0, 0, " + (d.value * 10) + ")";
+					   });
+
+					//Update all labels
+					svg.selectAll("text")
+					   .data(Teams)
+					   .transition()
+					   .duration(2000)			//     label transitions!
+					   .text(function(d) {
+					   		return d.value;
+					   })
+					   .attr("x", function(d, i) {
+					   		return xScale(i) + xScale.rangeBand() / 2;
+					   })
+					   .attr("y", function(d) {
+					   		return h - yScale(d.value) + 14;
+					   });
+					   				
+				});
+			//On click, update with new 2009			
+			d3.select("#p1")
+				.on("click", function() {
+				d3.select("#p2").html("2009 Regular season performance:");
+				//reinitialize arrays to get rid of the old data
+				var Teams=[{key: 'Central Pulse', value: 0}, {key: 'Northern Mystics', value: 0}, {key: 'Waikato Bay of Plenty Magic', value:0}, {key: 'Southern Steel', value: 0}, {key: 'Canterbury Tactix', value:0}, {key: 'New South Wales Swifts', value: 0}, {key: 'Adelaide Thunderbirds', value: 0}, {key: 'Melbourne Vixens', value:0}, {key: 'West Coast Fever', value: 0}, {key: 'Queensland Firebirds', value:0}];
+
+				for(var i=0; i<70; i++){
+				score[i]=dataset2009[i]['Score']; 
+				ScoreB[i]=+score[i].substring(3);	//the plus sign makes it a value
+				ScoreA[i]=+score[i].substring(0,2);
+				if(ScoreA[i]>ScoreB[i]){	
+					if((dataset2009[i]['Home Team'])==(Teams[0].key)){(Teams[0].value)=(Teams[0].value)+2;}
+					else if((dataset2009[i]['Home Team'])==(Teams[1].key)){(Teams[1].value)=(Teams[1].value)+2;}
+					else if((dataset2009[i]['Home Team'])==(Teams[2].key)){(Teams[2].value)=(Teams[2].value)+2;}
+					else if((dataset2009[i]['Home Team'])==(Teams[3].key)){(Teams[3].value)=(Teams[3].value)+2;}
+					else if((dataset2009[i]['Home Team'])==(Teams[4].key)){(Teams[4].value)=(Teams[4].value)+2;}	
+					else if((dataset2009[i]['Home Team'])==(Teams[5].key)){(Teams[5].value)=(Teams[5].value)+2;}
+					else if((dataset2009[i]['Home Team'])==(Teams[6].key)){(Teams[6].value)=(Teams[6].value)+2;}
+					else if((dataset2009[i]['Home Team'])==(Teams[7].key)){(Teams[7].value)=(Teams[7].value)+2;}
+					else if((dataset2009[i]['Home Team'])==(Teams[8].key)){(Teams[8].value)=(Teams[8].value)+2;}
+					else if((dataset2009[i]['Home Team'])==(Teams[9].key)){(Teams[9].value)=(Teams[9].value)+2;}
+				}
+				else if(ScoreB[i]>ScoreA[i]){
+					if((dataset2009[i]['Away Team'])==(Teams[0].key)){(Teams[0].value)=(Teams[0].value)+2;}
+					else if((dataset2009[i]['Away Team'])==(Teams[1].key)){(Teams[1].value)=(Teams[1].value)+2;}
+					else if((dataset2009[i]['Away Team'])==(Teams[2].key)){(Teams[2].value)=(Teams[2].value)+2;}
+					else if((dataset2009[i]['Away Team'])==(Teams[3].key)){(Teams[3].value)=(Teams[3].value)+2;}
+					else if((dataset2009[i]['Away Team'])==(Teams[4].key)){(Teams[4].value)=(Teams[4].value)+2;}	
+					else if((dataset2009[i]['Away Team'])==(Teams[5].key)){(Teams[5].value)=(Teams[5].value)+2;}
+					else if((dataset2009[i]['Away Team'])==(Teams[6].key)){(Teams[6].value)=(Teams[6].value)+2;}
+					else if((dataset2009[i]['Away Team'])==(Teams[7].key)){(Teams[7].value)=(Teams[7].value)+2;}
+					else if((dataset2009[i]['Away Team'])==(Teams[8].key)){(Teams[8].value)=(Teams[8].value)+2;}
+					else if((dataset2009[i]['Away Team'])==(Teams[9].key)){(Teams[9].value)=(Teams[9].value)+2;}
+				}
+			        }
+
+					var yScale = d3.scale.linear()
+							.domain([0, d3.max(Teams, function(d){return d.value;})])
+							.range([0, h]);
+					
+					//Update all rects
+					svg.selectAll("rect")
+					   .data(Teams)
+					   .transition()
+					   .duration(2000)
+					   .ease("bounce")	//can comment 
+					   .attr("y", function(d) {
+					   		return h - yScale(d.value);
+					   })
+					   .attr("height", function(d) {
+					   		return yScale(d.value);
+					   })
+					   .attr("fill", function(d) {
+							return "rgb(0, 0, " + (d.value * 10) + ")";
+					   });
+
+					//Update all labels
+					svg.selectAll("text")
+					   .data(Teams)
+					   .transition()
+					   .duration(2000)			//     label transitions!
+					   .text(function(d) {
+					   		return d.value;
+					   })
+					   .attr("x", function(d, i) {
+					   		return xScale(i) + xScale.rangeBand() / 2;
+					   })
+					   .attr("y", function(d) {
+					   		return h - yScale(d.value) + 14;
+					   });
+					   				
+				});
+			//On click, update with new 2010 data			
+			d3.select("#p3")
+				.on("click", function() {
+				d3.select("#p2").html("2010 Regular season performance:");
+				//reinitialize arrays to get rid of the old data
+				var Teams=[{key: 'Central Pulse', value: 0}, {key: 'Northern Mystics', value: 0}, {key: 'Waikato Bay of Plenty Magic', value:0}, {key: 'Southern Steel', value: 0}, {key: 'Canterbury Tactix', value:0}, {key: 'New South Wales Swifts', value: 0}, {key: 'Adelaide Thunderbirds', value: 0}, {key: 'Melbourne Vixens', value:0}, {key: 'West Coast Fever', value: 0}, {key: 'Queensland Firebirds', value:0}];
+
+				for(var i=0; i<70; i++){
+				score[i]=dataset2010[i]['Score']; 
+				ScoreB[i]=+score[i].substring(5);	//the plus sign makes it a value
+				ScoreA[i]=+score[i].substring(0,3);
+				if(ScoreA[i]>ScoreB[i]){	
+					if((dataset2010[i]['Home Team'])==(Teams[0].key)){(Teams[0].value)=(Teams[0].value)+2;}
+					else if((dataset2010[i]['Home Team'])==(Teams[1].key)){(Teams[1].value)=(Teams[1].value)+2;}
+					else if((dataset2010[i]['Home Team'])==(Teams[2].key)){(Teams[2].value)=(Teams[2].value)+2;}
+					else if((dataset2010[i]['Home Team'])==(Teams[3].key)){(Teams[3].value)=(Teams[3].value)+2;}
+					else if((dataset2010[i]['Home Team'])==(Teams[4].key)){(Teams[4].value)=(Teams[4].value)+2;}	
+					else if((dataset2010[i]['Home Team'])==(Teams[5].key)){(Teams[5].value)=(Teams[5].value)+2;}
+					else if((dataset2010[i]['Home Team'])==(Teams[6].key)){(Teams[6].value)=(Teams[6].value)+2;}
+					else if((dataset2010[i]['Home Team'])==(Teams[7].key)){(Teams[7].value)=(Teams[7].value)+2;}
+					else if((dataset2010[i]['Home Team'])==(Teams[8].key)){(Teams[8].value)=(Teams[8].value)+2;}
+					else if((dataset2010[i]['Home Team'])==(Teams[9].key)){(Teams[9].value)=(Teams[9].value)+2;}
+				}
+				else if(ScoreB[i]>ScoreA[i]){
+					if((dataset2010[i]['Away Team'])==(Teams[0].key)){(Teams[0].value)=(Teams[0].value)+2;}
+					else if((dataset2010[i]['Away Team'])==(Teams[1].key)){(Teams[1].value)=(Teams[1].value)+2;}
+					else if((dataset2010[i]['Away Team'])==(Teams[2].key)){(Teams[2].value)=(Teams[2].value)+2;}
+					else if((dataset2010[i]['Away Team'])==(Teams[3].key)){(Teams[3].value)=(Teams[3].value)+2;}
+					else if((dataset2010[i]['Away Team'])==(Teams[4].key)){(Teams[4].value)=(Teams[4].value)+2;}	
+					else if((dataset2010[i]['Away Team'])==(Teams[5].key)){(Teams[5].value)=(Teams[5].value)+2;}
+					else if((dataset2010[i]['Away Team'])==(Teams[6].key)){(Teams[6].value)=(Teams[6].value)+2;}
+					else if((dataset2010[i]['Away Team'])==(Teams[7].key)){(Teams[7].value)=(Teams[7].value)+2;}
+					else if((dataset2010[i]['Away Team'])==(Teams[8].key)){(Teams[8].value)=(Teams[8].value)+2;}
+					else if((dataset2010[i]['Away Team'])==(Teams[9].key)){(Teams[9].value)=(Teams[9].value)+2;}
+				}
+			        }
+
+					var yScale = d3.scale.linear()
+							.domain([0, d3.max(Teams, function(d){return d.value;})])
+							.range([0, h]);
+					
+					//Update all rects
+					svg.selectAll("rect")
+					   .data(Teams)
+					   .transition()
+					   .duration(2000)
+					   .ease("bounce")	//can comment 
+					   .attr("y", function(d) {
+					   		return h - yScale(d.value);
+					   })
+					   .attr("height", function(d) {
+					   		return yScale(d.value);
+					   })
+					   .attr("fill", function(d) {
+							return "rgb(0, 0, " + (d.value * 10) + ")";
+					   });
+
+					//Update all labels
+					svg.selectAll("text")
+					   .data(Teams)
+					   .transition()
+					   .duration(2000)			//     label transitions!
+					   .text(function(d) {
+					   		return d.value;
+					   })
+					   .attr("x", function(d, i) {
+					   		return xScale(i) + xScale.rangeBand() / 2;
+					   })
+					   .attr("y", function(d) {
+					   		return h - yScale(d.value) + 14;
+					   });
+					   				
+				});
+				
+				//On click, update with new 2011 data			
+			d3.select("#p4")
+				.on("click", function() {
+				d3.select("#p2").html("2011 Regular season performance:");
+				//reinitialize arrays to get rid of the old data
+				var Teams=[{key: 'Central Pulse', value: 0}, {key: 'Northern Mystics', value: 0}, {key: 'Waikato Bay of Plenty Magic', value:0}, {key: 'Southern Steel', value: 0}, {key: 'Canterbury Tactix', value:0}, {key: 'New South Wales Swifts', value: 0}, {key: 'Adelaide Thunderbirds', value: 0}, {key: 'Melbourne Vixens', value:0}, {key: 'West Coast Fever', value: 0}, {key: 'Queensland Firebirds', value:0}];
+
+				for(var i=0; i<65; i++){
+				score[i]=dataset2011[i]['Score']; 
+				ScoreB[i]=+score[i].substring(5);	//the plus sign makes it a value
+				ScoreA[i]=+score[i].substring(0,2);
+				if(ScoreA[i]>ScoreB[i]){	
+					if((dataset2011[i]['Home Team'])==(Teams[0].key)){(Teams[0].value)=(Teams[0].value)+2;}
+					else if((dataset2011[i]['Home Team'])==(Teams[1].key)){(Teams[1].value)=(Teams[1].value)+2;}
+					else if((dataset2011[i]['Home Team'])==(Teams[2].key)){(Teams[2].value)=(Teams[2].value)+2;}
+					else if((dataset2011[i]['Home Team'])==(Teams[3].key)){(Teams[3].value)=(Teams[3].value)+2;}
+					else if((dataset2011[i]['Home Team'])==(Teams[4].key)){(Teams[4].value)=(Teams[4].value)+2;}	
+					else if((dataset2011[i]['Home Team'])==(Teams[5].key)){(Teams[5].value)=(Teams[5].value)+2;}
+					else if((dataset2011[i]['Home Team'])==(Teams[6].key)){(Teams[6].value)=(Teams[6].value)+2;}
+					else if((dataset2011[i]['Home Team'])==(Teams[7].key)){(Teams[7].value)=(Teams[7].value)+2;}
+					else if((dataset2011[i]['Home Team'])==(Teams[8].key)){(Teams[8].value)=(Teams[8].value)+2;}
+					else if((dataset2011[i]['Home Team'])==(Teams[9].key)){(Teams[9].value)=(Teams[9].value)+2;}
+				}
+				else if(ScoreB[i]>ScoreA[i]){
+					if((dataset2011[i]['Away Team'])==(Teams[0].key)){(Teams[0].value)=(Teams[0].value)+2;}
+					else if((dataset2011[i]['Away Team'])==(Teams[1].key)){(Teams[1].value)=(Teams[1].value)+2;}
+					else if((dataset2011[i]['Away Team'])==(Teams[2].key)){(Teams[2].value)=(Teams[2].value)+2;}
+					else if((dataset2011[i]['Away Team'])==(Teams[3].key)){(Teams[3].value)=(Teams[3].value)+2;}
+					else if((dataset2011[i]['Away Team'])==(Teams[4].key)){(Teams[4].value)=(Teams[4].value)+2;}	
+					else if((dataset2011[i]['Away Team'])==(Teams[5].key)){(Teams[5].value)=(Teams[5].value)+2;}
+					else if((dataset2011[i]['Away Team'])==(Teams[6].key)){(Teams[6].value)=(Teams[6].value)+2;}
+					else if((dataset2011[i]['Away Team'])==(Teams[7].key)){(Teams[7].value)=(Teams[7].value)+2;}
+					else if((dataset2011[i]['Away Team'])==(Teams[8].key)){(Teams[8].value)=(Teams[8].value)+2;}
+					else if((dataset2011[i]['Away Team'])==(Teams[9].key)){(Teams[9].value)=(Teams[9].value)+2;}
+				}
+			        }
+
+					var yScale = d3.scale.linear()
+							.domain([0, d3.max(Teams, function(d){return d.value;})])
+							.range([0, h]);
+					
+					//Update all rects
+					svg.selectAll("rect")
+					   .data(Teams)
+					   .transition()
+					   .duration(2000)
+					   .ease("bounce")	//can comment 
+					   .attr("y", function(d) {
+					   		return h - yScale(d.value);
+					   })
+					   .attr("height", function(d) {
+					   		return yScale(d.value);
+					   })
+					   .attr("fill", function(d) {
+							return "rgb(0, 0, " + (d.value * 10) + ")";
+					   });
+
+					//Update all labels
+					svg.selectAll("text")
+					   .data(Teams)
+					   .transition()
+					   .duration(2000)			//     label transitions!
+					   .text(function(d) {
+					   		return d.value;
+					   })
+					   .attr("x", function(d, i) {
+					   		return xScale(i) + xScale.rangeBand() / 2;
+					   })
+					   .attr("y", function(d) {
+					   		return h - yScale(d.value) + 14;
+					   });
+					   				
+				});
+				//On click, update with new 2012 data			
+			d3.select("#p5")
+				.on("click", function() {
+				d3.select("#p2").html("2012 Regular season performance:");
+				//reinitialize arrays to get rid of the old data
+				var Teams=[{key: 'Central Pulse', value: 0}, {key: 'Northern Mystics', value: 0}, {key: 'Waikato Bay of Plenty Magic', value:0}, {key: 'Southern Steel', value: 0}, {key: 'Canterbury Tactix', value:0}, {key: 'New South Wales Swifts', value: 0}, {key: 'Adelaide Thunderbirds', value: 0}, {key: 'Melbourne Vixens', value:0}, {key: 'West Coast Fever', value: 0}, {key: 'Queensland Firebirds', value:0}];
+
+				for(var i=0; i<70; i++){
+				score[i]=dataset2012[i]['Score']; 
+				ScoreB[i]=+score[i].substring(5);	//the plus sign makes it a value
+				ScoreA[i]=+score[i].substring(0,2);
+				if(ScoreA[i]>ScoreB[i]){	
+					if((dataset2012[i]['Home Team'])==(Teams[0].key)){(Teams[0].value)=(Teams[0].value)+2;}
+					else if((dataset2012[i]['Home Team'])==(Teams[1].key)){(Teams[1].value)=(Teams[1].value)+2;}
+					else if((dataset2012[i]['Home Team'])==(Teams[2].key)){(Teams[2].value)=(Teams[2].value)+2;}
+					else if((dataset2012[i]['Home Team'])==(Teams[3].key)){(Teams[3].value)=(Teams[3].value)+2;}
+					else if((dataset2012[i]['Home Team'])==(Teams[4].key)){(Teams[4].value)=(Teams[4].value)+2;}	
+					else if((dataset2012[i]['Home Team'])==(Teams[5].key)){(Teams[5].value)=(Teams[5].value)+2;}
+					else if((dataset2012[i]['Home Team'])==(Teams[6].key)){(Teams[6].value)=(Teams[6].value)+2;}
+					else if((dataset2012[i]['Home Team'])==(Teams[7].key)){(Teams[7].value)=(Teams[7].value)+2;}
+					else if((dataset2012[i]['Home Team'])==(Teams[8].key)){(Teams[8].value)=(Teams[8].value)+2;}
+					else if((dataset2012[i]['Home Team'])==(Teams[9].key)){(Teams[9].value)=(Teams[9].value)+2;}
+				}
+				else if(ScoreB[i]>ScoreA[i]){
+					if((dataset2012[i]['Away Team'])==(Teams[0].key)){(Teams[0].value)=(Teams[0].value)+2;}
+					else if((dataset2012[i]['Away Team'])==(Teams[1].key)){(Teams[1].value)=(Teams[1].value)+2;}
+					else if((dataset2012[i]['Away Team'])==(Teams[2].key)){(Teams[2].value)=(Teams[2].value)+2;}
+					else if((dataset2012[i]['Away Team'])==(Teams[3].key)){(Teams[3].value)=(Teams[3].value)+2;}
+					else if((dataset2012[i]['Away Team'])==(Teams[4].key)){(Teams[4].value)=(Teams[4].value)+2;}	
+					else if((dataset2012[i]['Away Team'])==(Teams[5].key)){(Teams[5].value)=(Teams[5].value)+2;}
+					else if((dataset2012[i]['Away Team'])==(Teams[6].key)){(Teams[6].value)=(Teams[6].value)+2;}
+					else if((dataset2012[i]['Away Team'])==(Teams[7].key)){(Teams[7].value)=(Teams[7].value)+2;}
+					else if((dataset2012[i]['Away Team'])==(Teams[8].key)){(Teams[8].value)=(Teams[8].value)+2;}
+					else if((dataset2012[i]['Away Team'])==(Teams[9].key)){(Teams[9].value)=(Teams[9].value)+2;}
+				}
+			        }
+
+					var yScale = d3.scale.linear()
+							.domain([0, d3.max(Teams, function(d){return d.value;})])
+							.range([0, h]);
+					
+					//Update all rects
+					svg.selectAll("rect")
+					   .data(Teams)
+					   .transition()
+					   .duration(2000)
+					   .ease("bounce")	//can comment 
+					   .attr("y", function(d) {
+					   		return h - yScale(d.value);
+					   })
+					   .attr("height", function(d) {
+					   		return yScale(d.value);
+					   })
+					   .attr("fill", function(d) {
+							return "rgb(0, 0, " + (d.value * 10) + ")";
+					   });
+
+					//Update all labels
+					svg.selectAll("text")
+					   .data(Teams)
+					   .transition()
+					   .duration(2000)			//     label transitions!
+					   .text(function(d) {
+					   		return d.value;
+					   })
+					   .attr("x", function(d, i) {
+					   		return xScale(i) + xScale.rangeBand() / 2;
+					   })
+					   .attr("y", function(d) {
+					   		return h - yScale(d.value) + 14;
+					   });
+					   				
+				});
+				//On click, update with new 2013 data			
+			d3.select("#p6")
+				.on("click", function() {
+				d3.select("#p2").html("2013 Regular season performance:");
+				//reinitialize arrays to get rid of the old data
+				var Teams=[{key: 'Central Pulse', value: 0}, {key: 'Northern Mystics', value: 0}, {key: 'Waikato Bay of Plenty Magic', value:0}, {key: 'Southern Steel', value: 0}, {key: 'Canterbury Tactix', value:0}, {key: 'New South Wales Swifts', value: 0}, {key: 'Adelaide Thunderbirds', value: 0}, {key: 'Melbourne Vixens', value:0}, {key: 'West Coast Fever', value: 0}, {key: 'Queensland Firebirds', value:0}];
+
+				for(var i=0; i<70; i++){
+				score[i]=dataset2013[i]['Score']; 
+				ScoreB[i]=+score[i].substring(5);	//the plus sign makes it a value
+				ScoreA[i]=+score[i].substring(0,2);
+				if(ScoreA[i]>ScoreB[i]){	
+					if((dataset2013[i]['Home Team'])==(Teams[0].key)){(Teams[0].value)=(Teams[0].value)+2;}
+					else if((dataset2013[i]['Home Team'])==(Teams[1].key)){(Teams[1].value)=(Teams[1].value)+2;}
+					else if((dataset2013[i]['Home Team'])==(Teams[2].key)){(Teams[2].value)=(Teams[2].value)+2;}
+					else if((dataset2013[i]['Home Team'])==(Teams[3].key)){(Teams[3].value)=(Teams[3].value)+2;}
+					else if((dataset2013[i]['Home Team'])==(Teams[4].key)){(Teams[4].value)=(Teams[4].value)+2;}	
+					else if((dataset2013[i]['Home Team'])==(Teams[5].key)){(Teams[5].value)=(Teams[5].value)+2;}
+					else if((dataset2013[i]['Home Team'])==(Teams[6].key)){(Teams[6].value)=(Teams[6].value)+2;}
+					else if((dataset2013[i]['Home Team'])==(Teams[7].key)){(Teams[7].value)=(Teams[7].value)+2;}
+					else if((dataset2013[i]['Home Team'])==(Teams[8].key)){(Teams[8].value)=(Teams[8].value)+2;}
+					else if((dataset2013[i]['Home Team'])==(Teams[9].key)){(Teams[9].value)=(Teams[9].value)+2;}
+				}
+				else if(ScoreB[i]>ScoreA[i]){
+					if((dataset2013[i]['Away Team'])==(Teams[0].key)){(Teams[0].value)=(Teams[0].value)+2;}
+					else if((dataset2013[i]['Away Team'])==(Teams[1].key)){(Teams[1].value)=(Teams[1].value)+2;}
+					else if((dataset2013[i]['Away Team'])==(Teams[2].key)){(Teams[2].value)=(Teams[2].value)+2;}
+					else if((dataset2013[i]['Away Team'])==(Teams[3].key)){(Teams[3].value)=(Teams[3].value)+2;}
+					else if((dataset2013[i]['Away Team'])==(Teams[4].key)){(Teams[4].value)=(Teams[4].value)+2;}	
+					else if((dataset2013[i]['Away Team'])==(Teams[5].key)){(Teams[5].value)=(Teams[5].value)+2;}
+					else if((dataset2013[i]['Away Team'])==(Teams[6].key)){(Teams[6].value)=(Teams[6].value)+2;}
+					else if((dataset2013[i]['Away Team'])==(Teams[7].key)){(Teams[7].value)=(Teams[7].value)+2;}
+					else if((dataset2013[i]['Away Team'])==(Teams[8].key)){(Teams[8].value)=(Teams[8].value)+2;}
+					else if((dataset2013[i]['Away Team'])==(Teams[9].key)){(Teams[9].value)=(Teams[9].value)+2;}
+				}
+			        }
+
+					var yScale = d3.scale.linear()
+							.domain([0, d3.max(Teams, function(d){return d.value;})])
+							.range([0, h]);
+					
+					//Update all rects
+					svg.selectAll("rect")
+					   .data(Teams)
+					   .transition()
+					   .duration(2000)
+					   .ease("bounce")	//can comment 
+					   .attr("y", function(d) {
+					   		return h - yScale(d.value);
+					   })
+					   .attr("height", function(d) {
+					   		return yScale(d.value);
+					   })
+					   .attr("fill", function(d) {
+							return "rgb(0, 0, " + (d.value * 10) + ")";
+					   });
+
+					//Update all labels
+					svg.selectAll("text")
+					   .data(Teams)
+					   .transition()
+					   .duration(2000)			//     label transitions!
+					   .text(function(d) {
+					   		return d.value;
+					   })
+					   .attr("x", function(d, i) {
+					   		return xScale(i) + xScale.rangeBand() / 2;
+					   })
+					   .attr("y", function(d) {
+					   		return h - yScale(d.value) + 14;
+					   });
+					   				
+				});
+			
+			});
+			});
+			});
+			});
+			});
+			});
+			
+			
+			
+
+
+		</script>
+    </body>
+</html>

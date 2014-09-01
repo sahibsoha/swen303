@@ -1,0 +1,775 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>ScatterPlot</title>
+	<link rel="stylesheet" href="style2.css">
+        <script type="text/javascript" src="d3.min.js"></script>
+	<style type="text/css">
+			
+			.axis path,
+			.axis line {
+				fill: none;
+				stroke: black;
+				shape-rendering: crispEdges;
+			}
+			
+			.axis text {
+				font-family: sans-serif;
+				font-size: 11px;
+			}
+			div.tooltip {     position: absolute;             
+					text-align: center;           
+ 					 width: 100px;                    
+					height: 80px;                 
+  				        padding: 2px;            
+                                        font: 12px sans-serif;          
+					background: lightsteelblue;     
+					border: 0px;      
+  					border-radius: 20px;             
+					pointer-events: none; }
+
+		</style>
+    </head>
+    <body>	
+    <table bgcolor="#EE6363" width="80%" align="center">
+	<tr>
+	<td><p id="p0">Click here for 2008</p></td>
+	<td><p id="p1">Click here for 2009</p></td>
+	<td><p id="p3">Click here for 2010</p></td>
+	<td><p id="p4">Click here for 2011</p></td>
+	<td><p id="p5">Click here for 2012</p></td>
+	<td><p id="p6">Click here for 2013</p></td>
+	</tr>
+	<tr>
+	<td><p id="p7">Filter for NZ teams</p></td>
+	<td><p id="p8">Filter for Australian teams</p></td>
+	<td><p id="p9">Filter by Regular Season</p></td>
+	<td><p id="p10">Filter by Finals</p></td>
+	<td><a href="displayingdatabarchart.html">Performance of teams</a></td>
+	<td><a href="index.html">Welcome Page</a></td>
+	</tr>
+</table>
+
+
+		<script type="text/javascript">
+			//Width and height
+			var w = 500;
+			var h = 500;
+			var padding = 25;
+
+			var dataset=[];
+			var score=[];
+			var ScoreA=[];
+			var ScoreB=[];
+			var scatterData = [];
+			var teams=[];
+			var dataset2009=[];
+			var dataset2010=[];
+			var dataset2011=[];
+			var dataset2012=[];
+			var dataset2013=[];
+			var NZTeams=[{key: 'Central Pulse', value: 0}, {key: 'Northern Mystics', value: 0}, {key: 'Waikato Bay of Plenty Magic', value:0}, {key: 'Southern Steel', value: 0}, {key: 'Canterbury Tactix', value:0}];
+			var AuzzieTeams=[{key: 'New South Wales Swifts', value: 0}, {key: 'Adelaide Thunderbirds', value: 0}, {key: 'Melbourne Vixens', value:0}, {key: 'West Coast Fever', value: 0}, {key: 'Queensland Firebirds', value:0}];
+			//d3.select("body").append("p").html("Click here for 2008").attr("id","p0");
+			//d3.select("body").append("p").html("Click here for 2009").attr("id","p1");
+			//d3.select("body").append("p").html("Click here for 2010").attr("id","p3");
+			//d3.select("body").append("p").html("Click here for 2011").attr("id","p4");
+			//d3.select("body").append("p").html("Click here for 2012").attr("id","p5");
+			//d3.select("body").append("p").html("Click here for 2013").attr("id","p6");
+			//d3.select("body").append("p").html("Click here to filter for NZ teams").attr("id","p7");
+			//d3.select("body").append("p").html("Click here to filter for Australian teams").attr("id","p8");
+			d3.select("body").append("p").html("2008 data:").attr("id","p2");
+
+
+			d3.csv("2008.csv", function(error, data) {
+				if (error) {  //If error is not null, something went wrong.
+          				console.log(error);  //Log the error.
+        			} else {      //If no error, the file loaded correctly. 
+         			 //console.log(data);   //Log the data.
+
+      				//Include other code to execute after successful file load here
+      				dataset = data;
+				}
+			d3.csv("2009.csv", function(error, data2) {
+				if (error) {  //If error is not null, something went wrong.
+          				console.log(error);  //Log the error.
+        			} else {      //If no error, the file loaded correctly. 
+         			 //console.log(data2);   //Log the data.
+
+      				//Include other code to execute after successful file load here
+      				dataset2009 = data2;
+				}
+			d3.csv("2010.csv", function(error, data3) {
+				if (error) {  //If error is not null, something went wrong.
+          				console.log(error);  //Log the error.
+        			} else {      //If no error, the file loaded correctly. 
+         			 //console.log(data3);   //Log the data.
+
+      				//Include other code to execute after successful file load here
+      				dataset2010 = data3;
+				}
+			d3.csv("2011.csv", function(error, data4) {
+				if (error) {  //If error is not null, something went wrong.
+          				console.log(error);  //Log the error.
+        			} else {      //If no error, the file loaded correctly. 
+         			 //console.log(data4);   //Log the data.
+
+      				//Include other code to execute after successful file load here
+      				dataset2011 = data4;
+				}
+			d3.csv("2012.csv", function(error, data5) {
+				if (error) {  //If error is not null, something went wrong.
+          				console.log(error);  //Log the error.
+        			} else {      //If no error, the file loaded correctly. 
+         			 //console.log(data5);   //Log the data.
+
+      				//Include other code to execute after successful file load here
+      				dataset2012 = data5;
+				}
+			d3.csv("2013.csv", function(error, data6) {
+				if (error) {  //If error is not null, something went wrong.
+          				console.log(error);  //Log the error.
+        			} else {      //If no error, the file loaded correctly. 
+         			 //console.log(data6);   //Log the data.
+
+      				//Include other code to execute after successful file load here
+      				dataset2013 = data6;
+				}
+
+			//Create SVG element
+			var svg = d3.select("body").append("svg")
+						.attr("width", w)
+						.attr("height", h);
+			
+			for(var i=0; i<74; i++){
+				score[i]=dataset[i]['Score'];
+				ScoreB[i]=+score[i].substring(3);
+				ScoreA[i]=+score[i].substring(0,2);
+				scatterData.push([ScoreA[i], ScoreB[i]]);
+				teams[i]=({key1: (dataset[i]['Home Team']), value1: ScoreA[i], key2: (dataset[i]['Away Team']), value2: ScoreB[i], round:+(dataset[i]['Round'])});
+			}
+
+
+			//Create scale functions
+			var xScale = d3.scale.linear()
+						.domain([0, d3.max(scatterData, function(d) { return d[0]; })])
+						.range([padding, w - padding * 2]);
+
+			var yScale = d3.scale.linear()
+						.domain([0, d3.max(scatterData, function(d) { return d[1]; })])
+						.range([h - padding, padding]);
+
+			//Define X axis
+			var xAxis = d3.svg.axis()
+						.scale(xScale)
+						.orient("bottom")
+						.ticks(5);
+
+			//Define Y axis
+			var yAxis = d3.svg.axis()
+						.scale(yScale)
+						.orient("left")
+						.ticks(5);
+
+			//function declaration for div
+			var div = d3.select("body").append("div")   
+    			.attr("class", "tooltip")                   
+			.style("opacity", 0);
+			
+			function returnKeyScore (d){return teams.key1;}
+			function returnKeyScore2 (d){return teams.key2;}
+			
+
+			//Create circles
+			svg.selectAll("circle")
+			   .data(teams)
+			   .enter()
+			   .append("circle")
+			   .attr("cx", function(d) {
+			   		return xScale(d.value1);
+			   })
+			   .attr("cy", function(d) {
+			   		return yScale(d.value2);
+			   })
+			   .attr("r", 5)
+			    .on("mouseover", function(d) {		//this affects the bar hovered over
+				 div.transition()        
+                			.duration(200)      
+                			.style("opacity", .9);
+   					div .html( d.value1 + ","  + d.value2 + "<br/>"+ d.key1 +" vs "+d.key2)  
+                				.style("left", (d3.event.pageX) + "px")     
+               					.style("top", (d3.event.pageY - 28) + "px");  
+
+			   		 d3.select(this)
+					 .attr("fill", "red");
+			   		})
+			   .on("mouseout", function(d) {		//this affects the bars next to the one hovered over
+				   div.transition()        
+                			.duration(500)      
+                			.style("opacity", 0);
+				   d3.select(this)
+				   		.transition()
+				   		.duration(250)
+						.attr("fill", "black");
+			   });
+			   /*.append("title")
+			   .data(teams)
+			   .text(function(d) {
+			   		return d.key1 + " vs " + d.key2
+					+ " score: " +d.value1 
+					+ "," +d.value2;
+			   });*/
+			
+			//Create X axis
+			svg.append("g")
+				.attr("class", "x axis")
+				.attr("transform", "translate(0," + (h - padding) + ")")
+				.call(xAxis);
+			
+			//Create Y axis
+			svg.append("g")
+				.attr("class", "y axis")
+				.attr("transform", "translate(" + padding + ",0)")
+				.call(yAxis);
+			//label the elements
+			/*svg.selectAll("text")
+			   .data(scatterData)
+			   .enter()
+			   .append("text")
+			   .text(function(d) {
+			   		return d[0] + "," + d[1];
+			   })
+			   .attr("x", function(d) {
+			   		return xScale(d[0]);
+			   })
+			   .attr("y", function(d) {
+			   		return yScale(d[1]);
+			   })
+			   .attr("font-family", "sans-serif")
+			   .attr("font-size", "11px")
+			   .attr("fill", "red");*/
+			
+			//label the axis
+			 svg.append("text")
+   			 .attr("class", "x label")
+    			.attr("text-anchor", "end")
+   			 .attr("x", w)
+    			.attr("y", h - 6)
+    			.text("Home Team");
+			svg.append("text")
+    			.attr("class", "y label")
+    			.attr("text-anchor", "end")
+    			.attr("y", 6)
+    			.attr("dy", ".75em")
+    			.attr("transform", "rotate(-90)")
+    			.text("Away Team");
+
+			//On click change colour for NZ teams			
+			d3.select("#p7")
+				.on("click", function() {
+				d3.select("#p2").html("Filtered by NZ:");
+
+					//Update all circles
+					svg.selectAll("circle")
+					   .transition()
+					   .duration(500)
+					   .each("start", function() {
+						   d3.select(this)		//this is the current element
+						     .attr("fill", "magenta")
+						     .attr("r", 7);
+					   })
+					   .attr("cx", function(d) {
+					   		return xScale(d.value1);
+					   })
+					   .attr("cy", function(d) {
+					   		return yScale(d.value2);
+					   })
+					   .transition()
+					   .duration(1000)
+					   .attr("fill", function (d) {
+						if(((d.key1)!=(AuzzieTeams[0].key) && (d.key2)!=(AuzzieTeams[0].key))
+				                &&((d.key1)!=(AuzzieTeams[1].key) && (d.key2)!=(AuzzieTeams[1].key))
+				                &&((d.key1)!=(AuzzieTeams[2].key) && (d.key2)!=(AuzzieTeams[2].key))
+				                &&((d.key1)!=(AuzzieTeams[3].key) && (d.key2)!=(AuzzieTeams[3].key))
+				                &&((d.key1)!=(AuzzieTeams[4].key) && (d.key2)!=(AuzzieTeams[4].key))){
+						return "green";
+					      }
+						return "black";
+					   })
+					   .attr("r", 5);
+
+
+			});
+			//On click change colour for Auzzie teams			
+			d3.select("#p8")
+				.on("click", function() {
+				d3.select("#p2").html("Filtered by Australia:");
+
+					//Update all circles
+					svg.selectAll("circle")
+					   .transition()
+					   .duration(500)
+					   .each("start", function() {
+						   d3.select(this)		//this is the current element
+						     .attr("fill", "magenta")
+						     .attr("r", 7);
+					   })
+					   .attr("cx", function(d) {
+					   		return xScale(d.value1);
+					   })
+					   .attr("cy", function(d) {
+					   		return yScale(d.value2);
+					   })
+					   .transition()
+					   .duration(1000)
+					   .attr("fill", function (d) {
+						if(((d.key1)!=(NZTeams[0].key) && (d.key2)!=(NZTeams[0].key))
+				                &&((d.key1)!=(NZTeams[1].key) && (d.key2)!=(NZTeams[1].key))
+				                &&((d.key1)!=(NZTeams[2].key) && (d.key2)!=(NZTeams[2].key))
+				                &&((d.key1)!=(NZTeams[3].key) && (d.key2)!=(NZTeams[3].key))
+				                &&((d.key1)!=(NZTeams[4].key) && (d.key2)!=(NZTeams[4].key))){
+						return "orange";
+					      }
+						return "black";
+					   })
+					   .attr("r", 5);
+
+			});
+			//On click change colour for regular season			
+			d3.select("#p9")
+				.on("click", function() {
+				d3.select("#p2").html("Filtered by Regular season:");
+
+					//Update all circles
+					svg.selectAll("circle")
+					   .transition()
+					   .duration(500)
+					   .each("start", function() {
+						   d3.select(this)		//this is the current element
+						     .attr("fill", "magenta")
+						     .attr("r", 7);
+					   })
+					   .attr("cx", function(d) {
+					   		return xScale(d.value1);
+					   })
+					   .attr("cy", function(d) {
+					   		return yScale(d.value2);
+					   })
+					   .transition()
+					   .duration(1000)
+					   .attr("fill", function (d) {
+						if( ((d.round)!=17) && ((d.round)!=16)
+				                &&((d.round)!=15) ){
+						return "blue";
+					      }
+						return "black";
+					   })
+					   .attr("r", 5);
+
+			});
+			//On click change colour for finals			
+			d3.select("#p10")
+				.on("click", function() {
+				d3.select("#p2").html("Filtered by Finals:");
+
+					//Update all circles
+					svg.selectAll("circle")
+					   .transition()
+					   .duration(500)
+					   .each("start", function() {
+						   d3.select(this)		//this is the current element
+						     .attr("fill", "magenta")
+						     .attr("r", 7);
+					   })
+					   .attr("cx", function(d) {
+					   		return xScale(d.value1);
+					   })
+					   .attr("cy", function(d) {
+					   		return yScale(d.value2);
+					   })
+					   .transition()
+					   .duration(1000)
+					   .attr("fill", function (d) {
+						if( ((d.round)!=1) && ((d.round)!=2) &&((d.round)!=3) && ((d.round)!=4) && ((d.round)!=5) && ((d.round)!=6) && ((d.round)!=7)
+				                &&((d.round)!=8) &&((d.round)!=9) &&((d.round)!=10) &&((d.round)!=11)  &&((d.round)!=12) &&((d.round)!=13) &&((d.round)!=14)){
+						return "purple";
+					      }
+						return "black";
+					   })
+					   .attr("r", 5);
+
+			});
+			
+			//On click, update with new data for 2008			
+			d3.select("#p0")
+				.on("click", function() {
+				d3.select("#p2").html("2008 data:");
+
+				//reinitialize scatterdata
+				var scatterData = [];
+				var teams=[];
+				
+
+					//New values for dataset
+					for(var i=0; i<74; i++){
+					score[i]=dataset[i]['Score'];
+					ScoreB[i]=+score[i].substring(3);
+					ScoreA[i]=+score[i].substring(0,2);
+					scatterData.push([ScoreA[i], ScoreB[i]]);
+					teams[i]=({key1: (dataset[i]['Home Team']), value1: ScoreA[i], key2: (dataset[i]['Away Team']), value2: ScoreB[i], round:+(dataset[i]['Round'])});
+					}
+					
+					//Update scale domains
+					xScale.domain([0, d3.max(scatterData, function(d) { return d[0]; })]);
+
+					yScale.domain([0, d3.max(scatterData, function(d) { return d[1]; })]);
+
+
+					//Update all circles
+					svg.selectAll("circle")
+					   .data(teams)
+					   .transition()
+					   .duration(500)
+					   .each("start", function() {
+						   d3.select(this)		//this is the current element
+						     .attr("fill", "magenta")
+						     .attr("r", 7);
+					   })
+					   .attr("cx", function(d) {
+					   		return xScale(d.value1);
+					   })
+					   .attr("cy", function(d) {
+					   		return yScale(d.value2);
+					   })
+					   .transition()
+					   .duration(1000)
+					   .attr("fill", "black")
+					   .attr("r", 5);
+
+
+					//Update X axis
+					svg.select(".x.axis")
+				    	.transition()
+				    	.duration(500)
+						.call(xAxis);
+					
+					//Update Y axis
+					svg.select(".y.axis")
+				    	.transition()
+				    	.duration(500)
+						.call(yAxis);
+
+			});
+			
+			//On click, update with new data for 2009			
+			d3.select("#p1")
+				.on("click", function() {
+				d3.select("#p2").html("2009 data:");
+
+				//reinitialize scatterdata
+				var scatterData = [];
+				var teams=[];
+
+					//New values for dataset
+					for(var i=0; i<74; i++){
+					score[i]=dataset2009[i]['Score'];
+					ScoreB[i]=+score[i].substring(3);
+					ScoreA[i]=+score[i].substring(0,2);
+					scatterData.push([ScoreA[i], ScoreB[i]]);
+					teams[i]=({key1: (dataset2009[i]['Home Team']), value1: ScoreA[i], key2: (dataset2009[i]['Away Team']), value2: ScoreB[i], round:+(dataset2009[i]['Round'])});
+					}
+					
+					//Update scale domains
+					xScale.domain([0, d3.max(scatterData, function(d) { return d[0]; })]);
+
+					yScale.domain([0, d3.max(scatterData, function(d) { return d[1]; })]);
+
+
+					//Update all circles
+					svg.selectAll("circle")
+					   .data(teams)
+					   .transition()
+					   .duration(500)
+					   .each("start", function() {
+						   d3.select(this)		//this is the current element
+						     .attr("fill", "magenta")
+						     .attr("r", 7);
+					   })
+					   .attr("cx", function(d) {
+					   		return xScale(d.value1);
+					   })
+					   .attr("cy", function(d) {
+					   		return yScale(d.value2);
+					   })
+					   .transition()
+					   .duration(1000)
+					   .attr("fill", "black")
+					   .attr("r", 5);
+
+
+					//Update X axis
+					svg.select(".x.axis")
+				    	.transition()
+				    	.duration(500)
+						.call(xAxis);
+					
+					//Update Y axis
+					svg.select(".y.axis")
+				    	.transition()
+				    	.duration(500)
+						.call(yAxis);
+
+			});
+			
+			//On click, update with new data for 2010			
+			d3.select("#p3")
+				.on("click", function() {
+				d3.select("#p2").html("2010 data:");
+
+				//reinitialize scatterdata
+				var scatterData = [];
+				var teams=[];
+
+					//New values for dataset
+					for(var i=0; i<74; i++){
+					score[i]=dataset2010[i]['Score'];
+					ScoreB[i]=+score[i].substring(5);
+					ScoreA[i]=+score[i].substring(0,3);
+					scatterData.push([ScoreA[i], ScoreB[i]]);
+					teams[i]=({key1: (dataset2010[i]['Home Team']), value1: ScoreA[i], key2: (dataset2010[i]['Away Team']), value2: ScoreB[i], round:+(dataset2010[i]['Round'])});
+					}
+					
+					//Update scale domains
+					xScale.domain([0, d3.max(scatterData, function(d) { return d[0]; })]);
+
+					yScale.domain([0, d3.max(scatterData, function(d) { return d[1]; })]);
+
+
+					//Update all circles
+					svg.selectAll("circle")
+					   .data(teams)
+					   .transition()
+					   .duration(500)
+					   .each("start", function() {
+						   d3.select(this)		//this is the current element
+						     .attr("fill", "magenta")
+						     .attr("r", 7);
+					   })
+					   .attr("cx", function(d) {
+					   		return xScale(d.value1);
+					   })
+					   .attr("cy", function(d) {
+					   		return yScale(d.value2);
+					   })
+					   .transition()
+					   .duration(1000)
+					   .attr("fill", "black")
+					   .attr("r", 5);
+
+
+					//Update X axis
+					svg.select(".x.axis")
+				    	.transition()
+				    	.duration(500)
+						.call(xAxis);
+					
+					//Update Y axis
+					svg.select(".y.axis")
+				    	.transition()
+				    	.duration(500)
+						.call(yAxis);
+
+			});
+			//On click, update with new data for 2011			
+			d3.select("#p4")
+				.on("click", function() {
+				d3.select("#p2").html("2011 data:");
+
+				//reinitialize scatterdata
+				var scatterData = [];
+				var teams=[];
+				//svg.selectAll("circle").attr("fill", "white");
+
+					//New values for dataset
+					for(var i=0; i<74; i++){
+					score[i]=dataset2011[i]['Score'];
+					ScoreB[i]=+score[i].substring(5);
+					ScoreA[i]=+score[i].substring(0,2);
+					scatterData.push([ScoreA[i], ScoreB[i]]);
+					teams[i]=({key1: (dataset2011[i]['Home Team']), value1: ScoreA[i], key2: (dataset2011[i]['Away Team']), value2: ScoreB[i], round:+(dataset2011[i]['Round'])});
+					}
+					
+					//Update scale domains
+					xScale.domain([0, d3.max(scatterData, function(d) { return d[0]; })]);
+
+					yScale.domain([0, d3.max(scatterData, function(d) { return d[1]; })]);
+
+
+					//Update all circles
+					svg.selectAll("circle")
+					   .data(teams)
+					   .transition()
+					   .duration(500)
+					   .each("start", function() {
+						   d3.select(this)		//this is the current element
+						     .attr("fill", "magenta")
+						     .attr("r", 7);
+					   })
+					   .attr("cx", function(d) {
+					   		return xScale(d.value1);
+					   })
+					   .attr("cy", function(d) {
+					   		return yScale(d.value2);
+					   })
+					   .transition()
+					   .duration(1000)
+					   .attr("fill", "black")
+					   .attr("r", 5);
+
+
+					//Update X axis
+					svg.select(".x.axis")
+				    	.transition()
+				    	.duration(500)
+						.call(xAxis);
+					
+					//Update Y axis
+					svg.select(".y.axis")
+				    	.transition()
+				    	.duration(500)
+						.call(yAxis);
+
+			});
+			//On click, update with new data for 2012			
+			d3.select("#p5")
+				.on("click", function() {
+				d3.select("#p2").html("2012 data:");
+
+				//reinitialize scatterdata
+				var scatterData = [];
+				var teams=[];
+
+					//New values for dataset
+					for(var i=0; i<74; i++){
+					score[i]=dataset2012[i]['Score'];
+					ScoreB[i]=+score[i].substring(5);
+					ScoreA[i]=+score[i].substring(0,2);
+					scatterData.push([ScoreA[i], ScoreB[i]]);
+					teams[i]=({key1: (dataset2012[i]['Home Team']), value1: ScoreA[i], key2: (dataset2012[i]['Away Team']), value2: ScoreB[i], round:+(dataset2012[i]['Round'])});
+					}
+					
+					//Update scale domains
+					xScale.domain([0, d3.max(scatterData, function(d) { return d[0]; })]);
+
+					yScale.domain([0, d3.max(scatterData, function(d) { return d[1]; })]);
+
+
+					//Update all circles
+					svg.selectAll("circle")
+					   .data(teams)
+					   .transition()
+					   .duration(500)
+					   .each("start", function() {
+						   d3.select(this)		//this is the current element
+						     .attr("fill", "magenta")
+						     .attr("r", 7);
+					   })
+					   .attr("cx", function(d) {
+					   		return xScale(d.value1);
+					   })
+					   .attr("cy", function(d) {
+					   		return yScale(d.value2);
+					   })
+					   .transition()
+					   .duration(1000)
+					   .attr("fill", "black")
+					   .attr("r", 5);
+
+
+					//Update X axis
+					svg.select(".x.axis")
+				    	.transition()
+				    	.duration(500)
+						.call(xAxis);
+					
+					//Update Y axis
+					svg.select(".y.axis")
+				    	.transition()
+				    	.duration(500)
+						.call(yAxis);
+
+			});
+			//On click, update with new data for 2013			
+			d3.select("#p6")
+				.on("click", function() {
+				d3.select("#p2").html("2013 data:");
+
+				//reinitialize scatterdata
+				var scatterData = [];
+				var teams=[];
+
+					//New values for dataset
+					for(var i=0; i<74; i++){
+					score[i]=dataset2013[i]['Score'];
+					ScoreB[i]=+score[i].substring(5);
+					ScoreA[i]=+score[i].substring(0,2);
+					scatterData.push([ScoreA[i], ScoreB[i]]);
+					teams[i]=({key1: (dataset2013[i]['Home Team']), value1: ScoreA[i], key2: (dataset2013[i]['Away Team']), value2: ScoreB[i], round:+(dataset2013[i]['Round'])});
+					}
+					
+					//Update scale domains
+					xScale.domain([0, d3.max(scatterData, function(d) { return d[0]; })]);
+
+					yScale.domain([0, d3.max(scatterData, function(d) { return d[1]; })]);
+
+
+					//Update all circles
+					svg.selectAll("circle")
+					   .data(teams)
+					   .transition()
+					   .duration(500)
+					   .each("start", function() {
+						   d3.select(this)		//this is the current element
+						     .attr("fill", "magenta")
+						     .attr("r", 7);
+					   })
+					   .attr("cx", function(d) {
+					   		return xScale(d.value1);
+					   })
+					   .attr("cy", function(d) {
+					   		return yScale(d.value2);
+					   })
+					   .transition()
+					   .duration(1000)
+					   .attr("fill", "black")
+					   .attr("r", 5);
+
+
+					//Update X axis
+					svg.select(".x.axis")
+				    	.transition()
+				    	.duration(500)
+						.call(xAxis);
+					
+					//Update Y axis
+					svg.select(".y.axis")
+				    	.transition()
+				    	.duration(500)
+						.call(yAxis);
+
+			});
+
+			});
+			});
+			});
+			});
+			});
+			});
+			
+			
+
+
+		</script>
+    </body>
+</html>
